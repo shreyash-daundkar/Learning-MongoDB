@@ -1,8 +1,30 @@
-const Sequelize = require('sequelize');
+const mongodb = require('mongodb');
 
-const sequelize = new Sequelize('node-complete', 'root', 'nodecomplete', {
-  dialect: 'mysql',
-  host: 'localhost'
-});
 
-module.exports = sequelize;
+let _db;
+
+
+exports.mongoConnect = async callback => {
+  try {
+    const mongoClient = mongodb.MongoClient;
+
+    const client = await mongoClient.connect(
+      `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_USERNAME}.kaqa2nx.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority1`
+     );
+
+    db = client.db;
+    
+    callback(); 
+
+  } catch (error) {
+    console.error(error.stack);
+  }
+}
+
+
+exports.getDb = () => {
+
+  if(_db) return _db;
+
+  throw 'Database Not Found';
+}
