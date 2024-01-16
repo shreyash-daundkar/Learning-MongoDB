@@ -3,15 +3,21 @@ const { getDb } = require('../util/database');
 
 class Product {
 
-  constructor(title, imageUrl, price, description) {
+  constructor(title, imageUrl, price, description, id) {
     this.title = title;
     this.image = imageUrl;
     this.price = price;
     this.description = description;
+    this.id = id;
   }
 
   async save() {
     const db = getDb();
+    if(this.id) {
+      return await db.collection('product').updateOne({
+        _id: new mongodb.ObjectId(this.id),
+      },  { $set: this });
+    }
     return await db.collection('product').insertOne(this);
   }
 
@@ -27,7 +33,7 @@ class Product {
       _id: new mongodb.ObjectId(prodId)
     }).next();
   }
-  
+
 }
 
 // const Product = sequelize.define('product', {
