@@ -9,10 +9,10 @@ exports.mongoConnect = async callback => {
     const mongoClient = mongodb.MongoClient;
 
     const client = await mongoClient.connect(
-      `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_USERNAME}.kaqa2nx.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority1`
+      `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_USERNAME}.kaqa2nx.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
      );
 
-    db = client.db;
+    _db = client.db();
     
     callback(); 
 
