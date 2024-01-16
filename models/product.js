@@ -19,6 +19,15 @@ class Product {
     const db = getDb();
     return await db.collection('product').find().toArray();
   }
+
+  static async findById(prodId) {
+    const db = getDb();
+
+    return await db.collection('product').find({
+      _id: new mongodb.ObjectId(prodId)
+    }).next();
+  }
+  
 }
 
 // const Product = sequelize.define('product', {
