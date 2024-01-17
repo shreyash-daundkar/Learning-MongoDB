@@ -15,8 +15,9 @@ exports.postAddProduct = async (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const price = req.body.price;
     const description = req.body.description;
+    const userId = req.user._id;
   
-    const product = new Product(title, imageUrl, price, description);
+    const product = new Product(title, imageUrl, price, description, null, userId);
     
     const result = await product.save();
   
@@ -75,10 +76,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId)
-    .then(product => {
-      return product.destroy();
-    })
+  Product.deleteById(prodId)
     .then(result => {
       console.log('DESTROYED PRODUCT');
       res.redirect('/admin/products');
