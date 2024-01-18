@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', async (req, res, next) => {
     try {
-        req.user = await User.findById('0000000135a017e5c81d24b9')
+        req.user = await User.findById('0000000135a017e5c81d24b9');
         next();
     } catch (error) {
         console.error(error.stack);
@@ -71,7 +71,12 @@ app.use('/', async (req, res, next) => {
 //     console.log(err);
 //   });
 
-mongoConnect(() => {
-    console.log('db')
+mongoConnect(async () => {
+    console.log('db');
+    let user = await User.findById('0000000135a017e5c81d24b9')
+    if(!user) {
+        user = new User('0000000135a017e5c81d24b9', 'test', 'test@test.com', []);
+        await user.save();
+    }
     app.listen(4000);
 });
