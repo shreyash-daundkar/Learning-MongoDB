@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const User = require('../models/user');
 
 exports.getProducts = (req, res, next) => {
   Product.findAll()
@@ -51,21 +52,12 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  req.user
-    .getCart()
-    .then(cart => {
-      return cart
-        .getProducts()
-        .then(products => {
-          res.render('shop/cart', {
-            path: '/cart',
-            pageTitle: 'Your Cart',
-            products: products
-          });
-        })
-        .catch(err => console.log(err));
-    })
-    .catch(err => console.log(err));
+  const products = req.user.cart;
+  res.render('shop/cart', {
+    path: '/cart',
+    pageTitle: 'Your Cart',
+    products: products
+  });
 };
 
 exports.postCart = (req, res, next) => {
