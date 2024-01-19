@@ -85,24 +85,21 @@ exports.postCart = async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
-
 };
 
-exports.postCartDeleteProduct = (req, res, next) => {
-  const prodId = req.body.productId;
-  req.user
-    .getCart()
-    .then(cart => {
-      return cart.getProducts({ where: { id: prodId } });
-    })
-    .then(products => {
-      const product = products[0];
-      return product.cartItem.destroy();
-    })
-    .then(result => {
-      res.redirect('/cart');
-    })
-    .catch(err => console.log(err));
+exports.postCartDeleteProduct = async (req, res, next) => {
+  try {
+    const prodId = req.body.productId;
+    const { _id, cart } = req.user;
+    
+    const updatedCart = cart.filter(prod => prodId !== prod._id.toString());
+  
+    await User.saveCart(_id, updatedCart);
+    res.redirect('/cart');
+
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 exports.postOrder = (req, res, next) => {
