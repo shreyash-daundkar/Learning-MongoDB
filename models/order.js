@@ -20,6 +20,15 @@ class Order {
     return await db.collection('orders').insertOne(this);
   }
 
+
+  static async findByUserId(id) {
+    const db = getDb();
+
+    return await db.collection('orders').find({
+       userId: new mongodb.ObjectId(id) 
+    }).toArray();
+  }
+
 }
 
 
