@@ -103,30 +103,35 @@ exports.postCartDeleteProduct = async (req, res, next) => {
   }
 };
 
-exports.postOrder = (req, res, next) => {
+exports.postOrder = async (req, res, next) => {
   try {
     const { _id, cart } = req.user;
 
     const order = new Order(_id, cart);
-    order.save();
+    await order.save();
 
-    User.saveCart(_id, []);
+    await User.saveCart(_id, []);
 
     res.redirect('/orders');
-  } catch (error) {
     
+  } catch (error) {
+    console.log(error);
   }
 };
 
-exports.getOrders = (req, res, next) => {
-  req.user
-    .getOrders({include: ['products']})
-    .then(orders => {
-      res.render('shop/orders', {
-        path: '/orders',
-        pageTitle: 'Your Orders',
-        orders: orders
-      });
-    })
-    .catch(err => console.log(err));
+exports.getOrders = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+
+    const orders = await Order.findByUserId(_id);
+
+    res.render('shop/orders', {
+      path: '/orders',
+      pageTitle: 'Your Orders',
+      orders: orders
+    });
+    
+  } catch (error) {
+    console.log(error);
+  }
 };
