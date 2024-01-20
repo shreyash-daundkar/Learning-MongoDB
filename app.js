@@ -2,6 +2,7 @@ const path = require('path');
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 // const errorController = require('./controllers/error');
 const { mongoConnect } = require('./util/database');
@@ -23,14 +24,14 @@ const shopRoutes = require('./routes/shop');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', async (req, res, next) => {
-    try {
-        req.user = await User.findById('0000000135a017e5c81d24b9');
-        next();
-    } catch (error) {
-        console.error(error.stack);
-    }
-});
+// app.use('/', async (req, res, next) => {
+//     try {
+//         req.user = await User.findById('0000000135a017e5c81d24b9');
+//         next();
+//     } catch (error) {
+//         console.error(error.stack);
+//     }
+// });
 
  app.use('/admin', adminRoutes);
  app.use(shopRoutes);
@@ -71,12 +72,11 @@ app.use('/', async (req, res, next) => {
 //     console.log(err);
 //   });
 
-mongoConnect(async () => {
+mongoose.connect(`mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_USERNAME}.kaqa2nx.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`)
+.then(() => {
     console.log('db');
-    let user = await User.findById('0000000135a017e5c81d24b9')
-    if(!user) {
-        user = new User('0000000135a017e5c81d24b9', 'test', 'test@test.com', []);
-        await user.save();
-    }
     app.listen(4000);
+})
+.catch(err => {
+    console.log(err);
 });
