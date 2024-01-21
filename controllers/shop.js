@@ -3,7 +3,7 @@ const User = require('../models/user');
 const Order = require('../models/order');
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  Product.find()
     .then(products => {
       res.render('shop/product-list', {
         prods: products,
@@ -14,10 +14,11 @@ exports.getProducts = (req, res, next) => {
     .catch(err => {
       console.log(err);
     });
-};
-
-exports.getProduct = (req, res, next) => {
-  const prodId = req.params.productId;
+  };
+  
+  exports.getProduct = (req, res, next) => {
+    const prodId = req.params.productId;
+    console.log(prodId == '65ab4e2075118fa4de8b18bd')
   // Product.findAll({ where: { id: prodId } })
   //   .then(products => {
   //     res.render('shop/product-detail', {
@@ -39,7 +40,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.findAll()
+  Product.find()
     .then(products => {
       res.render('shop/index', {
         prods: products,
