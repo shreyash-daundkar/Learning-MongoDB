@@ -1,44 +1,27 @@
-const mongodb = require('mongodb');
-const { getDb } = require('../util/database');
+const { Schema, model } = require('mongoose');
 
 
-
-class User {
-
-
-  constructor(id, name, email, cart) {
-
-    this._id = new mongodb.ObjectId(id);
-    this.name = name;
-    this.email = email;
-    this.cart = cart;
-  }
-
-
-  async save() {
-    const db = getDb();
-      
-    return await db.collection('users').insertOne(this);
-  }
-
-
-  static async findById(id) {
-    const db = getDb();
-
-    return await db.collection('users').findOne({
-       _id: new mongodb.ObjectId(id) 
-    });
-  }
+const userSchema = new Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  cart: [{
+    procuctId : {
+      type: Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true
+    }
+  }],
+}); 
 
 
-  static async saveCart(userId, updatedCart) {
-    const db = getDb();
-
-    return await db.collection('users').updateOne({ _id: userId },  { $set: { cart: updatedCart} });
-  }
-  
-    
-}
-
-
-module.exports = User;
+module.exports = model('User', userSchema);
