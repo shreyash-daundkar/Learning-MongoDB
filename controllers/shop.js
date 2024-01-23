@@ -56,26 +56,25 @@ exports.getCart = (req, res, next) => {
 exports.postCart = async (req, res, next) => {
   try {
     const prodId = req.body.productId;
-    const { _id, cart } = req.user;
+    const { cart } = req.user;
 
     const products = cart.filter(prod => prodId === prod._id.toString());
-    let product;
     if(products.length === 0) {
+      
+      const { _id } = await Product.findById(prodId);
 
-      product = await Product.findById(prodId);
-      product.quantity = 1;
-      cart.push(product);
+      cart.push({
+        productId: _id,
+        quantity: 1,
+       });
 
-    } else {
-      product = products[0];
-      product.quantity++;
-    }
-  
-    await User.saveCart(_id, cart);
+    } else products[0].quantity++;
+
+    await req.user.save();
     res.redirect('/cart');
 
   } catch (error) {
-    console.log(error);
+    console.log(error.stack);
   }
 };
 
@@ -86,7 +85,9 @@ exports.postCartDeleteProduct = async (req, res, next) => {
     
     const updatedCart = cart.filter(prod => prodId !== prod._id.toString());
   
-    await User.saveCart(_id, updatedCart);
+    req.user.cart = updatedCart;
+    await req.user.save();
+    
     res.redirect('/cart');
 
   } catch (error) {
