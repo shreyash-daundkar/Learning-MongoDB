@@ -60,7 +60,7 @@ exports.postCart = async (req, res, next) => {
 
     const products = cart.filter(prod => prodId === prod._id.toString());
     if(products.length === 0) {
-      
+
       const { _id } = await Product.findById(prodId);
 
       cart.push({
@@ -99,10 +99,15 @@ exports.postOrder = async (req, res, next) => {
   try {
     const { _id, cart } = req.user;
 
-    const order = new Order(_id, cart);
+    const order = new Order({
+      userId: _id, 
+      items: cart,
+    });
+
     await order.save();
 
-    await User.saveCart(_id, []);
+    req.user.cart = [];
+    await req.user.save();
 
     res.redirect('/orders');
     
