@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 // const errorController = require('./controllers/error');
-const { mongoConnect } = require('./util/database');
 // const Product = require('./models/product');
 const User = require('./models/user');
 // const Cart = require('./models/cart');
@@ -24,14 +23,14 @@ const shopRoutes = require('./routes/shop');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/', async (req, res, next) => {
-//     try {
-//         req.user = await User.findById('0000000135a017e5c81d24b9');
-//         next();
-//     } catch (error) {
-//         console.error(error.stack);
-//     }
-// });
+app.use('/', async (req, res, next) => {
+    try {
+        req.user = await User.findById('0000000135a017e5c81d24b9');
+        next();
+    } catch (error) {
+        console.error(error.stack);
+    }
+});
 
  app.use('/admin', adminRoutes);
  app.use(shopRoutes);
@@ -74,7 +73,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect(`mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_USERNAME}.kaqa2nx.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`)
 .then(() => {
+
     console.log('db');
+    return User.findById('0000000135a017e5c81d24b9');
+})
+.then(user => {
+    
+    if(!user) {
+        user = new User({
+            _id:'0000000135a017e5c81d24b9', 
+            name: 'test', 
+            email:'test@test.com', 
+            cart: []
+        });
+        user.save();
+    }
+
     app.listen(4000);
 })
 .catch(err => {
