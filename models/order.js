@@ -1,36 +1,24 @@
-const mongodb = require('mongodb');
-const { getDb } = require('../util/database');
+const { Schema, model } = require('mongoose');
 
 
-
-class Order {
-
-
-  constructor(userId, cart) {
-
-    this.userId = new mongodb.ObjectId(userId);
-    this.items = cart;
-    this.date = new Date();
-  }
-
-
-  async save() {
-    const db = getDb();
-      
-    return await db.collection('orders').insertOne(this);
-  }
-
-
-  static async findByUserId(id) {
-    const db = getDb();
-
-    return await db.collection('orders').find({
-       userId: new mongodb.ObjectId(id) 
-    }).toArray();
-  }
-
-}
+const orderSchema = new Schema({
+  userId : {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  items: [{
+    productId : {
+      type: Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true
+    }
+  }],
+}); 
 
 
-
-module.exports = Order;
+module.exports = model('Order', orderSchema);
