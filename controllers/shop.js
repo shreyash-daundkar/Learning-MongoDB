@@ -120,7 +120,9 @@ exports.getOrders = async (req, res, next) => {
   try {
     const { _id } = req.user;
 
-    const orders = await Order.findByUserId(_id);
+    const orders = await Order.find({
+      userId: _id,
+    }).populate('items.productId');
 
     res.render('shop/orders', {
       path: '/orders',
